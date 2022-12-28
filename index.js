@@ -7,14 +7,6 @@ const {
   addContact,
 } = require("./contacts");
 
-// listContacts();
-
-// getContactById(5);
-
-// removeContact("ede5f563-3eae-46c4-b6e6-c711d4284cc7");
-
-// addContact("Mango Mango", "qwerty@mail.com", "(123)456-7890");
-
 const program = new Command();
 program
   .option("-a, --action <type>", "choose action")
