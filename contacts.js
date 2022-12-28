@@ -38,6 +38,13 @@ async function removeContact(contactId) {
       (contact) => contact.id !== contactId
     );
 
+    const findContact = parsedData.findIndex(
+      (contact) => contact.id === contactId
+    );
+    if (findContact === -1) {
+      console.log(`\x1B[31m No contact with id ${contactId}`);
+      return;
+    }
     await fs.writeFile(contactsPath, JSON.stringify(filteredData, null, 2));
     console.table(filteredData);
     console.log("\x1B[31m Successfully deleted");
