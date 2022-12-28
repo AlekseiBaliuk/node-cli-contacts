@@ -2,6 +2,7 @@
 
 # Get contact list (console.table)
 node index.js --action list
+
 https://ibb.co/ZVdcTcH
 
 # Get contact by id
