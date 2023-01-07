@@ -6,9 +6,9 @@ const contactsPath = path.join(__dirname, "db", "contacts.json");
 
 async function listContacts() {
   try {
-    const data = await fs.readFile(contactsPath, "utf-8");
-    const parsedData = JSON.parse(data);
-    console.table(parsedData);
+    const data = await fs.readFile(contactsPath);
+    const contacts = JSON.parse(data);
+    return contacts;
   } catch (error) {
     console.log(error);
   }
@@ -16,15 +16,12 @@ async function listContacts() {
 
 async function getContactById(contactId) {
   try {
-    const data = await fs.readFile(contactsPath, "utf-8");
-    const parsedData = JSON.parse(data);
-    const contactById = parsedData.filter(
-      (contact) => contact.id === contactId
-    );
-    if (!contactById.length) {
-      throw new Error(`No matches with id ${contactId}`);
+    const contacts = await listContacts();
+    const contactById = contacts.find((contact) => contact.id === contactId);
+    if (!contactById) {
+      return null;
     }
-    console.table(contactById);
+    return contactById;
   } catch (error) {
     console.log(error);
   }
@@ -32,13 +29,10 @@ async function getContactById(contactId) {
 
 async function removeContact(contactId) {
   try {
-    const data = await fs.readFile(contactsPath, "utf-8");
-    const parsedData = JSON.parse(data);
-    const filteredData = parsedData.filter(
-      (contact) => contact.id !== contactId
-    );
+    const contacts = await listContacts();
+    const filteredData = contacts.filter((contact) => contact.id !== contactId);
 
-    const findContact = parsedData.findIndex(
+    const findContact = contacts.findIndex(
       (contact) => contact.id === contactId
     );
     if (findContact === -1) {
@@ -55,8 +49,7 @@ async function removeContact(contactId) {
 
 async function addContact(name, email, phone) {
   try {
-    const data = await fs.readFile(contactsPath, "utf-8");
-    const parsedData = JSON.parse(data);
+    const contacts = await listContacts();
 
     const contactToAdd = {
       id: v4(),
@@ -65,11 +58,28 @@ async function addContact(name, email, phone) {
       phone,
     };
 
-    const newData = [...parsedData, contactToAdd];
+    const newData = [...contacts, contactToAdd];
 
     await fs.writeFile(contactsPath, JSON.stringify(newData, null, 2));
-    console.table(newData);
-    console.log("\x1B[31m Successfully added");
+    return newData;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+async function updateContact(id, name, email, phone) {
+  try {
+    const contacts = await listContacts();
+
+    const idx = contacts.findIndex(contact => contact.id === id);
+    if (idx === -1) {
+      return null;
+    }
+
+    contacts[idx] = {id, name, email, phone};
+
+    await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
+    return contacts[idx];
   } catch (error) {
     console.log(error);
   }
@@ -80,4 +90,5 @@ module.exports = {
   getContactById,
   removeContact,
   addContact,
+  updateContact
 };
