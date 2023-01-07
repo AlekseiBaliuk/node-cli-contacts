@@ -37,18 +37,11 @@ async function removeContact(contactId) {
     }
 
     const filteredContacts = contacts.filter((_, index) => index !== idx);
-
     await fs.writeFile(contactsPath, JSON.stringify(filteredContacts, null, 2));
-
     return contacts[idx];
 
     // v2
-    // const idx = contacts.findIndex((contact) => contact.id === contactId);
-    // if (idx === -1) {
-    //   return null;
-    // }
     // const [removedContact] = contacts.splice(idx, 1);
-
     // await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
     // return removedContact;
   } catch (error) {
