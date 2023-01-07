@@ -30,18 +30,27 @@ async function getContactById(contactId) {
 async function removeContact(contactId) {
   try {
     const contacts = await listContacts();
-    const filteredData = contacts.filter((contact) => contact.id !== contactId);
 
-    const findContact = contacts.findIndex(
-      (contact) => contact.id === contactId
-    );
-    if (findContact === -1) {
-      console.log(`\x1B[31m No contact with id ${contactId}`);
-      return;
+    const idx = contacts.findIndex((contact) => contact.id === contactId);
+    if (idx === -1) {
+      return null;
     }
-    await fs.writeFile(contactsPath, JSON.stringify(filteredData, null, 2));
-    console.table(filteredData);
-    console.log("\x1B[31m Successfully deleted");
+
+    const filteredContacts = contacts.filter((_, index) => index !== idx);
+
+    await fs.writeFile(contactsPath, JSON.stringify(filteredContacts, null, 2));
+
+    return contacts[idx];
+
+    // v2
+    // const idx = contacts.findIndex((contact) => contact.id === contactId);
+    // if (idx === -1) {
+    //   return null;
+    // }
+    // const [removedContact] = contacts.splice(idx, 1);
+
+    // await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
+    // return removedContact;
   } catch (error) {
     console.log(error);
   }
@@ -71,12 +80,12 @@ async function updateContact(id, name, email, phone) {
   try {
     const contacts = await listContacts();
 
-    const idx = contacts.findIndex(contact => contact.id === id);
+    const idx = contacts.findIndex((contact) => contact.id === id);
     if (idx === -1) {
       return null;
     }
 
-    contacts[idx] = {id, name, email, phone};
+    contacts[idx] = { id, name, email, phone };
 
     await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
     return contacts[idx];
@@ -90,5 +99,5 @@ module.exports = {
   getContactById,
   removeContact,
   addContact,
-  updateContact
+  updateContact,
 };
